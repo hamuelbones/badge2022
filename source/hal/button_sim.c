@@ -125,7 +125,7 @@ int button_up_latches(void) {
     return return_val;
 }
 
-void clear_latches(void) {
+void button_clear_latches(void) {
     down_latches = 0;
     up_latches = 0;
 }

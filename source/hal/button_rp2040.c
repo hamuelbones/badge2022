@@ -131,7 +131,7 @@ int button_up_latches(void) {
     return response;
 }
 
-void clear_latches(void) {
+void button_clear_latches(void) {
     critical_section_enter_blocking(&critical_section);
     up_latches = 0;
     down_latches = 0;

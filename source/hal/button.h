@@ -30,7 +30,7 @@ int button_mask();
 // Get up and down latches. These will return the corresponding bit once each call.
 int button_down_latches(void);
 int button_up_latches(void);
-void clear_latches(void);
+void button_clear_latches(void);
 
 typedef void (*user_gpio_callback)(BADGE_BUTTON button, bool state);
 void button_set_interrupt(user_gpio_callback cb);
