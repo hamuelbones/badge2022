@@ -8,7 +8,6 @@
 #include "py/runtime.h"
 #include "py/gc.h"
 #include "modmachine.h"
-#include "shared/runtime/mpirq.h"
 
 #include "audio_output.h"
 #include "button.h"
@@ -205,6 +204,7 @@ static mp_obj_t mp_S6B33_pixels(mp_obj_t pixels) {
         if (pixel_count == 100) {
             S6B33_pixels(pixel_buffer, pixel_count);
             pixel_count = 0;
+
         }
     }
     if (pixel_count) {
