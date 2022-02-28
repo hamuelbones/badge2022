@@ -109,7 +109,7 @@ void FbBackgroundColor(unsigned short color)
     G_Fb.BGcolor = color;
 }
 
-void FbImage(unsigned char assetId, unsigned char seqNum)
+void FbImage(unsigned char assetId, int seqNum)
 {
     switch (assetList[assetId].type) {
         case PICTURE1BIT:
@@ -133,7 +133,7 @@ void FbImage(unsigned char assetId, unsigned char seqNum)
     }
 }
 
-void FbImage8bit(unsigned char assetId, unsigned char seqNum)
+void FbImage8bit(unsigned char assetId, int seqNum)
 {
     unsigned char y, yEnd, x;
     unsigned char *pixdata, pixbyte, ci, *cmap, r, g, b;
@@ -175,7 +175,7 @@ void FbImage8bit(unsigned char assetId, unsigned char seqNum)
     G_Fb.changed = 1;
 }
 
-void FbImage4bit(unsigned char assetId, unsigned char seqNum)
+void FbImage4bit(unsigned char assetId, int seqNum)
 {
     unsigned char y, yEnd, x;
     unsigned char *pixdata, pixbyte, ci, *cmap, r, g, b;
@@ -243,7 +243,7 @@ void FbImage4bit(unsigned char assetId, unsigned char seqNum)
     G_Fb.changed = 1;
 }
 
-void FbImage2bit(unsigned char assetId, unsigned char seqNum)
+void FbImage2bit(unsigned char assetId, int seqNum)
 {
     unsigned char y, yEnd, x;
     unsigned char *pixdata, pixbyte, ci, *cmap, r, g, b;
@@ -359,7 +359,7 @@ void FbImage2bit(unsigned char assetId, unsigned char seqNum)
     G_Fb.changed = 1;
 }
 
-void FbImage1bit(unsigned char assetId, unsigned char seqNum)
+void FbImage1bit(unsigned char assetId, int seqNum)
 {
     unsigned char y, yEnd, x;
     unsigned char *pixdata, pixbyte, ci; // , *cmap, r, g, b;
@@ -479,6 +479,7 @@ void FbLine1(unsigned char x1, unsigned char y1)
     FbLine(G_Fb.pos.x, G_Fb.pos.y, x1, y1);
     G_Fb.pos.x = x1;
     G_Fb.pos.y = y1;
+
 }
 
 void FbLine(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1)
@@ -567,15 +568,13 @@ void FbSwapBuffers()
     G_Fb.pos.y = 0;
 }
 
-extern int getRotate(void);
-
 /* Copies LCDbuffer to screen one row at at time and only if that row has changed.
  * If your app only changes small parts of the screen at a time, this can be faster.
  */
 void FbPaintNewRows(void)
 {
     unsigned int i;
-    int rotated = getRotate();
+    int rotated = S6B33_get_rotation();
 
     if (G_Fb.changed == 0)
         return;

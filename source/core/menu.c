@@ -559,7 +559,7 @@ void rvasec_splash_cb(){
         audio_set_note(100, 4092);
     }
     else if(wait < 40){
-        drawLCD4(HACKRVA4, 0);
+        FbImage4bit(HACKRVA4, 0);
         FbSwapBuffers();
         //PowerSaveIdle();
     }

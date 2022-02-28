@@ -124,11 +124,6 @@ struct menu_t backlight_m[] = {
     {"Back", VERT_ITEM|LAST_ITEM|DEFAULT_ITEM, BACK, {NULL} },
 };
 
-int getRotate(void)
-{
-	return S6B33_get_rotation();
-}
-
 void setRotate(int yes)
 {
     S6B33_set_rotation(yes);
