@@ -174,7 +174,7 @@ static void figure_out_alive_cells(void)
 #ifndef __linux__
 static int get_time(void)
 {
-	return (int) rtc_get_time_of_day().tv_sec;
+	return (int) rtc_get_time_of_day();
 }
 #endif
 

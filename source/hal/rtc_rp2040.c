@@ -44,13 +44,11 @@ time_t rtc_get_unix_seconds(void) {
     return mktime(&time);
 }
 
-struct timeval rtc_get_time_of_day(void) {
+uint32_t rtc_get_time_of_day(void) {
     datetime_t pico_time;
     rtc_get_datetime(&pico_time);
 
-    struct timeval time = {0};
-    time.tv_sec = pico_time.hour * 3600 + pico_time.min * 60 + pico_time.sec;
-    return time;
+    return pico_time.hour * 3600 + pico_time.min * 60 + pico_time.sec;
 }
 
 uint64_t rtc_get_ms_since_boot(void) {

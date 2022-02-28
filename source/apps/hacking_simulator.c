@@ -656,7 +656,7 @@ static void evaluate_connection()
 #ifndef __linux__
 static int get_time(void)
 {
-    return (int) rtc_get_time_of_day().tv_sec;
+    return (int) rtc_get_time_of_day();
 }
 #endif
 
