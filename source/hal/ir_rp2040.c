@@ -123,11 +123,15 @@ void irq_fifo_handler(void) {
     }
 }
 
+static bool initialized = false;
 void ir_init(void) {
-    rx_sm = nec_rx_init(IR_PIO, BADGE_GPIO_IR_RX);
-    tx_sm = nec_tx_init(IR_PIO, BADGE_GPIO_IR_TX);
+    if (!initialized) {
+        initialized = true;
+        rx_sm = nec_rx_init(IR_PIO, BADGE_GPIO_IR_RX);
+        tx_sm = nec_tx_init(IR_PIO, BADGE_GPIO_IR_TX);
+        irq_add_shared_handler(PIO0_IRQ_1, irq_fifo_handler, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
+    }
 
-    irq_add_shared_handler(PIO0_IRQ_1, irq_fifo_handler, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
     enum pio_interrupt_source irq_source = pis_sm0_rx_fifo_not_empty + rx_sm;
     pio_set_irq1_source_enabled(IR_PIO, irq_source, true);
     irq_set_enabled(PIO0_IRQ_1, true);
