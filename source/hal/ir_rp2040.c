@@ -36,8 +36,8 @@ static IR_DATA current_rx_message = {
     .data = current_rx_data,
 };
 
-static int tx_sm;
-static int rx_sm;
+static int tx_sm = -1;
+static int rx_sm = -1;
 static int message_count;
 static bool receiving_message = false;
 
@@ -125,16 +125,27 @@ void irq_fifo_handler(void) {
 
 static bool initialized = false;
 void ir_init(void) {
-    if (!initialized) {
-        initialized = true;
-        rx_sm = nec_rx_init(IR_PIO, BADGE_GPIO_IR_RX);
-        tx_sm = nec_tx_init(IR_PIO, BADGE_GPIO_IR_TX);
-        irq_add_shared_handler(PIO0_IRQ_1, irq_fifo_handler, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
+
+    irq_set_enabled(PIO0_IRQ_1, false);
+    if ((rx_sm >= 0) && (pio_sm_is_claimed(IR_PIO, rx_sm))) {
+        pio_sm_unclaim(IR_PIO, rx_sm);
     }
 
+    if ((tx_sm >= 0) && (pio_sm_is_claimed(IR_PIO, tx_sm))) {
+        pio_sm_unclaim(IR_PIO, tx_sm);
+        // Not accessable, but init claims two SMs
+        pio_sm_unclaim(IR_PIO, tx_sm-1);
+    }
+    rx_sm = nec_rx_init(IR_PIO, BADGE_GPIO_IR_RX);
+    tx_sm = nec_tx_init(IR_PIO, BADGE_GPIO_IR_TX);
+
+    if (!initialized) {
+        irq_add_shared_handler(PIO0_IRQ_1, irq_fifo_handler, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
+    }
     enum pio_interrupt_source irq_source = pis_sm0_rx_fifo_not_empty + rx_sm;
     pio_set_irq1_source_enabled(IR_PIO, irq_source, true);
     irq_set_enabled(PIO0_IRQ_1, true);
+    initialized = true;
 }
 
 bool ir_add_callback(ir_data_callback data_cb, IR_APP_ID app_id) {

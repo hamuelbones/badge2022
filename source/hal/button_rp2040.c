@@ -117,7 +117,10 @@ void gpio_callback(uint gpio, uint32_t events) {
 void button_init_gpio(void) {
 
     alarm_pool_init_default();
-    critical_section_init(&critical_section);
+
+    if (critical_section.spin_lock == NULL) {
+        critical_section_init(&critical_section);
+    }
 
     for (int i=0; i<BADGE_BUTTON_MAX; i++) {
         uint gpio = (uint) button_gpios[i];
