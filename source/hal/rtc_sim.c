@@ -23,10 +23,10 @@ time_t rtc_get_unix_seconds(void) {
     return time(NULL);
 }
 
-struct timeval rtc_get_time_of_day(void) {
+uint32_t rtc_get_time_of_day(void) {
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    return tv;
+    return tv.tv_sec;
 }
 
 uint64_t rtc_get_ms_since_boot(void) {

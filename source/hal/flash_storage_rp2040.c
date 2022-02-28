@@ -42,6 +42,7 @@ size_t flash_data_write(uint8_t sector, uint16_t offset, const uint8_t *buf, siz
 
     // Limit write to the end of the NOR flash
     len = MIN(len, NOR_FLASH_SIZE - address);
+    size_t write_len = len;
 
     // Figure out which pages we will be iterating over.
     uint32_t start_page_address = address & (~(FLASH_PAGE_SIZE-1));
@@ -85,7 +86,7 @@ size_t flash_data_write(uint8_t sector, uint16_t offset, const uint8_t *buf, siz
     restore_interrupts(interrupt_status);
     assert(multicore_lockout_end_timeout_us(1000*1000) == true);
 
-    return len;
+    return write_len;
 }
 
 void flash_erase(uint8_t sector) {
