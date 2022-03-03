@@ -48,16 +48,6 @@ void fb_mark_row_changed(int x, int y)
 
 void FbInit() {
 
-#ifdef MICROPY_BUILD_TYPE
-    if (!LCDbufferA) {
-        LCDbufferA = mp_nonlocal_alloc(FBSIZE * sizeof(uint16_t));
-    }
-    if (!LCDbufferB) {
-        LCDbufferB = mp_nonlocal_alloc(FBSIZE * sizeof(uint16_t));
-    }
-#endif
-
-
     G_Fb.buffer = LCDbufferA;
     G_Fb.pos.x = 0;
     G_Fb.pos.y = 0;

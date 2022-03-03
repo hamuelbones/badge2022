@@ -3,12 +3,50 @@
 #include "py/runtime.h"
 #include "modmachine.h"
 
+#include <string.h>
+
 #include "framebuffer.h"
 #include "assets.h"
 #include "assetList.h"
 #include "colors.h"
 
+static const char* BUFFER_A_NAME = "_LCDBufferA";
+static const char* BUFFER_B_NAME = "_LCDBufferB";
+
 STATIC mp_obj_t mb_init(void) {
+
+    extern uint16_t *LCDbufferA;
+    extern uint16_t *LCDbufferB;
+
+    const char *buffer_dict_name = "_buffers";
+
+    mp_obj_dict_t *globals = mp_globals_get();
+
+    // Make a sub-dictionary to hide the modules from being printed in dir()/etc
+    mp_map_t *module_map = mp_obj_dict_get_map(globals);
+    mp_obj_t *buffer_dict_key = mp_obj_new_str(buffer_dict_name, strlen(buffer_dict_name));
+    if (!mp_map_lookup(module_map, buffer_dict_key, MP_MAP_LOOKUP)) {
+        mp_obj_dict_store(globals, buffer_dict_key, mp_obj_new_dict(0));
+    }
+    mp_obj_dict_t *buffer_dict = mp_obj_dict_get(globals, buffer_dict_key);
+    mp_map_t *map = mp_obj_dict_get_map(buffer_dict);
+
+    mp_obj_t *buffer_a_key = mp_obj_new_str(BUFFER_A_NAME, strlen(BUFFER_A_NAME));
+    if (!mp_map_lookup(map, buffer_a_key, MP_MAP_LOOKUP)) {
+        uint16_t* new_array = m_malloc(FBSIZE * sizeof(uint16_t));
+        LCDbufferA = new_array;
+        mp_obj_t *b_array = mp_obj_new_bytearray_by_ref(FBSIZE * sizeof(uint16_t), new_array);
+        mp_obj_dict_store(buffer_dict, buffer_a_key, b_array);
+    }
+
+    mp_obj_t *buffer_b_key = mp_obj_new_str(BUFFER_B_NAME, strlen(BUFFER_B_NAME));
+    if (!mp_map_lookup(map, buffer_b_key, MP_MAP_LOOKUP)) {
+        uint16_t* new_array = m_malloc(FBSIZE * sizeof(uint16_t));
+        LCDbufferB = new_array;
+        mp_obj_t *b_array = mp_obj_new_bytearray_by_ref(FBSIZE * sizeof(uint16_t), new_array);
+        mp_obj_dict_store(buffer_dict, buffer_b_key, b_array);
+    }
+
     FbInit();
     return mp_const_none;
 }
@@ -238,7 +276,6 @@ STATIC mp_obj_t mp_paint_new_rows(void) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(mp_paint_new_rows_obj, mp_paint_new_rows);
 
-
 /* --------------------------------------------------------------- */
 // Display Python module
 
@@ -292,6 +329,7 @@ static const mp_rom_map_elem_t badge_display_globals_table[] = {
         {MP_ROM_QSTR(MP_QSTR_CYAN), MP_ROM_INT(CYAN)},
         {MP_ROM_QSTR(MP_QSTR_YELLOW), MP_ROM_INT(YELLOW)},
         {MP_ROM_QSTR(MP_QSTR_MAGENTA), MP_ROM_INT(MAGENTA)},
+
 };
 
 STATIC MP_DEFINE_CONST_DICT(badge_display_globals, badge_display_globals_table);
