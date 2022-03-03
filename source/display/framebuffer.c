@@ -18,9 +18,16 @@ struct framebuffer_t G_Fb;
 
 */
 
-/* the output buffer */
+/* the output buffer. Needs to be on micropy heap to fit for micropython builds */
+#ifndef MICROPY_BUILD_TYPE
 unsigned short LCDbufferA[FBSIZE];
 unsigned short LCDbufferB[FBSIZE];
+#else
+// Need to pull big chunks of data from micropython heap
+#include "py/runtime.h"
+unsigned short* LCDbufferA;
+unsigned short* LCDbufferB;
+#endif
 
 unsigned char min_changed_x[LCD_YSIZE];
 unsigned char max_changed_x[LCD_YSIZE];
@@ -39,6 +46,17 @@ void fb_mark_row_changed(int x, int y)
 #define BUFFER( ADDR ) G_Fb.buffer[(ADDR)]
 
 void FbInit() {
+
+#ifdef MICROPY_BUILD_TYPE
+    if (!LCDbufferA) {
+        LCDbufferA = mp_nonlocal_alloc(FBSIZE * sizeof(uint16_t));
+    }
+    if (!LCDbufferB) {
+        LCDbufferB = mp_nonlocal_alloc(FBSIZE * sizeof(uint16_t));
+    }
+#endif
+
+
     G_Fb.buffer = LCDbufferA;
     G_Fb.pos.x = 0;
     G_Fb.pos.y = 0;
