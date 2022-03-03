@@ -56,6 +56,7 @@ static void _init_gpios(void) {
 
 }
 
+
 void hal_init(void) {
 
     stdio_init_all();

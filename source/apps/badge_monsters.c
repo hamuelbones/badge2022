@@ -692,6 +692,7 @@ static void exit_app(void)
     app_state = INIT_APP_STATE;
     save_to_flash();
     unregister_ir_packet_callback(ir_packet_callback);
+
 }
 
 static void app_init(void)
@@ -708,7 +709,9 @@ static void app_init(void)
     smiley_y = LCD_XSIZE / 2;
     nmonsters = ARRAYSIZE(monsters);
     nvendor_monsters = ARRAYSIZE(vendor_monsters);
-    initial_mon = badge_system_data()->badgeId % nmonsters;
+    // TODO fix
+    //initial_mon = badge_system_data()->badgeId % nmonsters;
+    initial_mon = 5;
     current_monster = initial_mon;
     enable_monster(initial_mon);
     load_from_flash();

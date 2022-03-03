@@ -402,7 +402,6 @@ static void smashout_game_play()
 static void smashout_game_exit()
 {
 	smashout_program_state = SMASHOUT_GAME_INIT;
-	returnToMenus();
 }
 
 int smashout_cb(void)

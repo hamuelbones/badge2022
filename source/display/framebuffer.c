@@ -25,9 +25,10 @@ unsigned short LCDbufferB[FBSIZE];
 #else
 // Need to pull big chunks of data from micropython heap
 #include "py/runtime.h"
-unsigned short* LCDbufferA;
-unsigned short* LCDbufferB;
+unsigned short* LCDbufferA = 0;
+unsigned short* LCDbufferB = 0;
 #endif
+
 
 unsigned char min_changed_x[LCD_YSIZE];
 unsigned char max_changed_x[LCD_YSIZE];

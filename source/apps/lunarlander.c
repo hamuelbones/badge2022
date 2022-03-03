@@ -688,7 +688,6 @@ static void lunarlander_run()
 static void lunarlander_exit()
 {
 	lunarlander_state = LUNARLANDER_INIT; /* So that when we start again, we do not immediately exit */
-	returnToMenus();
 }
 
 int lunarlander_cb(void)

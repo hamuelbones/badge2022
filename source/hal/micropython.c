@@ -340,6 +340,12 @@ const mp_obj_module_t badge_flash_module = {
 
 STATIC mp_obj_t mp_hal_init(void) {
     machine_pin_deinit();
+
+    extern unsigned short *LCDbufferA;
+    extern unsigned short *LCDbufferB;
+    LCDbufferA = NULL;
+    LCDbufferB = NULL;
+
     hal_init();
     return mp_const_none;
 }
