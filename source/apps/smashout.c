@@ -91,7 +91,6 @@ static void init_bricks(void)
 static void smashout_game_init(void)
 {
 	xorshift_state = 0xa5a5a5a5 ^ (int)rtc_get_ms_since_boot();
-	FbInit();
 	FbClear();
 	init_bricks();
 	paddle.x = LCD_XSIZE / 2;

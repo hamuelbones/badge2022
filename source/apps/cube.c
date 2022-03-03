@@ -54,7 +54,6 @@ static void cube_init(void)
 	int i;
 	static int already_scaled_cube = 0;
 
-	FbInit();
 	FbClear();
 	FbSwapBuffers();
 	cube_state = CUBE_RUN;

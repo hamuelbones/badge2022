@@ -370,7 +370,6 @@ static void place_lunar_base(void)
 
 static void lunarlander_init(void)
 {
-	FbInit();
 	FbClear();
 	terrain_y[0] = -100;
 	terrain_y[NUM_TERRAIN_POINTS - 1] = -100;

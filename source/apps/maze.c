@@ -421,7 +421,6 @@ static void init_maze_objects(void)
 /* Initial program state to kick off maze generation */
 static void maze_init(void)
 {
-    FbInit();
     xorshift_state = maze_random_seed[maze_current_level];
     if (xorshift_state == 0)
         xorshift_state = 0xa5a5a5a5;

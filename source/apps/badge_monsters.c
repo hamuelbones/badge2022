@@ -697,7 +697,6 @@ static void exit_app(void)
 
 static void app_init(void)
 {
-    FbInit();
     app_state = INIT_APP_STATE;
     register_ir_packet_callback(ir_packet_callback);
     dynmenu_init(&menu, menu_item, ARRAYSIZE(menu_item));

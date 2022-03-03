@@ -26,7 +26,6 @@ static enum ghostdetector_state_t ghostdetector_state = GHOSTDETECTOR_INIT;
 
 static void ghostdetector_init(void)
 {
-	FbInit();
 	FbClear();
 	ghostdetector_state = GHOSTDETECTOR_RUN;
 }

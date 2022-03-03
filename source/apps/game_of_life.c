@@ -331,7 +331,6 @@ static void render_splash_screen(void)
 
 static void game_of_life_init(void)
 {
-	FbInit();
 	FbClear();
 
 	game_of_life_state = GAME_OF_LIFE_SPLASH_SCREEN;

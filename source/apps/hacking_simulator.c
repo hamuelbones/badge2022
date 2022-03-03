@@ -1025,7 +1025,6 @@ static void render_screen()
 
 static void hackingsimulator_init()
 {
-	FbInit();
 	FbClear();
 	cursor_x_index = 0;
 	cursor_y_index = 0;

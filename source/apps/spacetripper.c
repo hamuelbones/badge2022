@@ -403,7 +403,6 @@ static void st_draw_menu(void)
 static void st_game_init(void)
 {
 	dynmenu_init(&menu, menu_item, 20);
-	FbInit();
 	FbColor(WHITE);
 	FbBackgroundColor(BLACK);
 	FbClear();

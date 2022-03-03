@@ -20,7 +20,6 @@ static int screen_changed = 0;
 
 static void about_badge_init(void)
 {
-	FbInit();
 	about_badge_state = ABOUT_BADGE_RUN;
 	screen_changed = 1;
 }

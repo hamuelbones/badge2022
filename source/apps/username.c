@@ -248,7 +248,6 @@ static void exit_app(void)
 static void app_init(void)
 {
 	restore_username_from_flash(username, sizeof(username));
-	FbInit();
 	FbClear();
 	FbColor(WHITE);
 	app_state = INIT_APP_STATE;
