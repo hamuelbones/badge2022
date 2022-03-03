@@ -319,7 +319,7 @@ static void place_blocker()
 /* ensure_winnable_path determines a winning path and places those pieces on the board */
 static void ensure_winnable_path()
 {
-	int vertical_direction;
+	int vertical_direction = 0;
 	int currentX;
 	int currentY = source;
 
@@ -1043,7 +1043,6 @@ static void hackingsimulator_run()
 static void hackingsimulator_exit()
 {
 	hacking_simulator_state = HACKINGSIMULATOR_INIT; /* So that when we start again, we do not immediately exit */
-	returnToMenus();
 }
 
 static struct dynmenu quitmenu;
@@ -1102,7 +1101,7 @@ int hacking_simulator_cb(void)
 		break;
 	case HACKINGSIMULATOR_EXIT:
 		hackingsimulator_exit();
-		break;
+		return 1;
 	case HACKINGSIM_QUIT_CONFIRM:
 		hackingsimulator_quit_confirm();
 		break;

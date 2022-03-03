@@ -128,11 +128,10 @@ static void myprogram_run()
 static void myprogram_exit()
 {
 	myprogram_state = MYPROGRAM_INIT; /* So that when we start again, we do not immediately exit */
-	returnToMenus();
 }
 
 /* You will need to rename myprogram_cb() something else. */
-void myprogram_cb(void)
+int myprogram_cb(void)
 {
 	switch (myprogram_state) {
 	case MYPROGRAM_INIT:
@@ -142,10 +141,10 @@ void myprogram_cb(void)
 		myprogram_run();
 		break;
 	case MYPROGRAM_EXIT:
+    default:
 		myprogram_exit();
-		break;
-	default:
-		break;
+        return 1;
 	}
+    return 0;
 }
 

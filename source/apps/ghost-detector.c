@@ -93,7 +93,6 @@ static void ghostdetector_run()
 static void ghostdetector_exit()
 {
 	ghostdetector_state = GHOSTDETECTOR_INIT; /* So that when we start again, we do not immediately exit */
-	returnToMenus();
 }
 
 /* You will need to rename ghostdetector_cb() something else. */
@@ -108,7 +107,7 @@ int ghostdetector_cb(void)
 		break;
 	case GHOSTDETECTOR_EXIT:
 		ghostdetector_exit();
-		break;
+        return 1;
 	default:
 		break;
 	}

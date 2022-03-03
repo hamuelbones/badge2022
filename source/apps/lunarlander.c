@@ -702,7 +702,7 @@ int lunarlander_cb(void)
 		break;
 	case LUNARLANDER_EXIT:
 		lunarlander_exit();
-		break;
+        return 1;
 	default:
 		break;
 	}

@@ -21,7 +21,7 @@ static void led(int red, int green, int blue) {
 }
 
 #define LED_LVL 50
-void QC_cb()
+int QC_cb()
 {
     //static unsigned char call_count = 0;
     static int QC_state=0;
@@ -125,8 +125,7 @@ void QC_cb()
                 FbSwapBuffers();
                 led(0,0,0);
                 QC_state = 0;
-                returnToMenus();
-                return;
+                return 1;
             }
 
             if(down_latches & (1<<BADGE_BUTTON_UP)){
@@ -161,4 +160,5 @@ void QC_cb()
                 FbSwapBuffers();
             }
     }
+    return 0;
 }

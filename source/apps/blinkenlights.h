@@ -22,6 +22,6 @@ void set_bl_exit();
 void set_local_leds();
 void bl_populate_menu();
 
-void blinkenlights_cb();
+int blinkenlights_cb();
 #endif	/* BLINKENLIGHTS_H */
 

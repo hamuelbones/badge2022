@@ -156,7 +156,7 @@ int test_flair_led_cb(void)
 		break;
 	case TEST_FLAIR_EXIT:
 		test_flair_exit();
-		break;
+        return 1;
 	default:
 		break;
 	}

@@ -109,7 +109,6 @@ void set_bl_go()
 void set_bl_exit()
 {
     bl_state = INIT;
-    returnToMenus();
 }
 
 void bl_populate_menu()
@@ -164,7 +163,7 @@ void set_local_leds()
     led_pwm_enable(BADGE_LED_RGB_BLUE, bl_blue * 255 / 100);
 }
 
-void blinkenlights_cb()
+int blinkenlights_cb()
 {
     int down_latches = button_down_latches();
     switch(bl_state)
@@ -270,4 +269,6 @@ void blinkenlights_cb()
             }
             break;
     }
+    // If we've reset to the init state, we want to exit
+    return bl_state == INIT;
 }

@@ -49,10 +49,11 @@ struct menu_t {
    unsigned char type;
    union {                      /* when initing the union, coerce non void data to a menu_t to keep compiler from whining */
       const struct menu_t *menu;
-      void (*func)(struct menu_t *m);
+      int (*func)(void);
       void *generic;
    } data;
 };
+
 
 struct menu_t *getMenuStack(unsigned char item);
 struct menu_t *getSelectedMenuStack(unsigned char item);
@@ -64,7 +65,7 @@ void menus();
 struct menu_t *getCurrMenu();
 struct menu_t *getSelectedMenu();
 
-extern void (*runningApp)() ;
+extern int (*runningApp)() ;
 void genericMenu(struct menu_t *L_menu, MENU_STYLE, uint32_t button_latches);
 void closeMenuAndReturn();
 

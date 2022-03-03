@@ -1,4 +1,4 @@
 #ifndef QC_H
 #define QC_H
-void QC_cb();
+int QC_cb();
 #endif

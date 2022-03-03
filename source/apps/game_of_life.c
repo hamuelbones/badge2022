@@ -369,7 +369,6 @@ static void game_of_life_run(void)
 static void game_of_life_exit(void)
 {
 	game_of_life_state = GAME_OF_LIFE_INIT; /* So that when we start again, we do not immediately exit */
-	returnToMenus();
 }
 
 int game_of_life_cb(void)
@@ -390,7 +389,7 @@ int game_of_life_cb(void)
 		break;
 	case GAME_OF_LIFE_EXIT:
 		game_of_life_exit();
-		break;
+        return 1;
 	default:
 		break;
 	}

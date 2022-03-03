@@ -7,6 +7,6 @@
    and delete this comment from your copy.
 */
 
-void myapp_cb(void);
+int myapp_cb(void);
 
 #endif

@@ -239,12 +239,11 @@ int cube_cb(void)
 		break;
 	case CUBE_EXIT:
 		cube_state = CUBE_INIT;
-		returnToMenus();
 		break;
 	default:
 		break;
 	}
-	return 0;
+	return cube_state == CUBE_INIT;
 }
 
 #ifdef __linux__

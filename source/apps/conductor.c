@@ -95,7 +95,6 @@ void set_go()
 void set_exit()
 {
     con_state = INIT;
-    returnToMenus();
 }
 
 void populate_menu()
@@ -200,7 +199,7 @@ void run_conductor(uint32_t down_latches)
     }
 }
 
-void conductor_cb()
+int conductor_cb()
 {
     int down_latches = button_down_latches();
     switch(con_state)
@@ -292,5 +291,5 @@ void conductor_cb()
             run_conductor(down_latches);
             break;
     }
-
+    return (con_state == INIT);
 }

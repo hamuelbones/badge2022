@@ -36,7 +36,7 @@
 
 unsigned char redraw_main_menu = 0;
 
-void rvasec_splash_cb();
+int rvasec_splash_cb();
 
 extern const struct menu_t games_m[];
 extern const struct menu_t main_m[] ;
@@ -48,9 +48,9 @@ extern const struct menu_t schedule_m[];
 //#define QC
 
 #ifdef QC
- void (*runningApp)() = QC_cb;
+ int (*runningApp)() = QC_cb;
 #else
- void (*runningApp)() = rvasec_splash_cb;
+ int (*runningApp)() = rvasec_splash_cb;
 #endif
 
 
@@ -270,8 +270,12 @@ void returnToMenus()
 void menus()
 {
     if (runningApp != NULL) { /* running app is set by menus() not genericMenus() */
-            (*runningApp)();
-            return;
+            int return_val = (*runningApp)();
+            if (return_val) {
+                returnToMenus();
+            } else {
+                return;
+            }
     }
 
     if (G_currMenu == NULL 
@@ -442,7 +446,7 @@ void genericMenu(struct menu_t *L_menu, MENU_STYLE style, uint32_t down_latches)
 
             case FUNCTION: /* call the function pointer if clicked */
                     audio_set_note(90, NOTEDUR); /* e */
-                    (*L_selectedMenu->data.func)(L_selectedMenu);
+                    (*L_selectedMenu->data.func)();
 
 		    /* clean up for nex call back */
 		    L_menu = NULL;
@@ -545,7 +549,7 @@ const char splash_words_btn1[] = "Press the button";
 const char splash_words_btn2[] = "to continue!";
 
 #define SPLASH_SHIFT_DOWN 85
-void rvasec_splash_cb(){
+int rvasec_splash_cb(){
     static unsigned short wait = 0;
     static unsigned char loading_txt_idx = 0,
     load_bar = 0;
@@ -629,8 +633,9 @@ void rvasec_splash_cb(){
     if (down_latches)
         printf("latches: %08x\n", down_latches);
     if(down_latches & (1<<BADGE_BUTTON_SW)){
-        returnToMenus();
+        return 1;
     }
+    return 0;
 }
 
 

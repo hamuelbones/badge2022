@@ -89,7 +89,6 @@ static void check_the_buttons(void)
 static void exit_app(void)
 {
 	app_state = INIT_APP_STATE;
-	returnToMenus();
 }
 
 static void app_init(void)
@@ -104,7 +103,8 @@ static void app_init(void)
 int sample_app_cb(void)
 {
 	state_to_function_map[app_state]();
-	return 0;
+    // should only exit when we want to go back to the init state
+	return app_state == INIT_APP_STATE;
 }
 
 #ifdef __linux__

@@ -8,7 +8,7 @@ void set_conductor_left_note();
 void set_mode();
 void set_go();
 void set_exit();
-void conductor_cb();
+int conductor_cb();
 void run_conductor();
 
 #endif	/* CONDUCTOR_H */

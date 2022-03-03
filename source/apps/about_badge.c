@@ -61,7 +61,6 @@ static void about_badge_run()
 static void about_badge_exit()
 {
 	about_badge_state = ABOUT_BADGE_INIT; /* So that when we start again, we do not immediately exit */
-	returnToMenus();
 }
 
 int about_badge_cb(void)
@@ -75,8 +74,8 @@ int about_badge_cb(void)
 		break;
 	case ABOUT_BADGE_EXIT:
 		about_badge_exit();
-		break;
-	default:
+	    return 1;
+    default:
 		break;
 	}
 	return 0;

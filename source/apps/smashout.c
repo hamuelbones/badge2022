@@ -416,7 +416,7 @@ int smashout_cb(void)
 		break;
 	case SMASHOUT_GAME_EXIT:
 		smashout_game_exit();
-		break;
+        return 1;
 	default:
 		break;
 	}

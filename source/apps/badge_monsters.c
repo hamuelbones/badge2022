@@ -283,8 +283,8 @@ static void draw_menu(void)
     dynmenu_draw(&menu);
     if(menu_level != MONSTER_MENU){
         int nunlocked = 0;
-        char available_monsters[3];
-        char unlocked_monsters[3];
+        char available_monsters[15];
+        char unlocked_monsters[15];
         for(i = 0; i < nmonsters; i++)
         {
             if(monsters[i].status == 1)
@@ -692,7 +692,6 @@ static void exit_app(void)
     app_state = INIT_APP_STATE;
     save_to_flash();
     unregister_ir_packet_callback(ir_packet_callback);
-    returnToMenus();
 }
 
 static void app_init(void)
@@ -718,7 +717,9 @@ static void app_init(void)
 int badge_monsters_cb(void)
 {
     state_to_function_map[app_state]();
-    return 0;
+    
+    // Should not go back to init state until we want to quit
+    return (app_state == INIT_APP_STATE);
 }
 
 #ifdef __linux__

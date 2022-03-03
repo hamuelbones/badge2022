@@ -243,7 +243,6 @@ static void exit_app(void)
 {
 	save_username_to_flash(username, sizeof(username));
 	app_state = INIT_APP_STATE;
-	returnToMenus();
 }
 
 static void app_init(void)
@@ -260,7 +259,7 @@ static void app_init(void)
 int username_cb(void)
 {
 	state_to_function_map[app_state]();
-	return 0;
+    return app_state = INIT_APP_STATE;
 }
 
 #ifdef __linux__
