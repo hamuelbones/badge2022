@@ -25,7 +25,10 @@ target_sources(badge_apps INTERFACE
         ${CMAKE_CURRENT_LIST_DIR}/../core/xorshift.c
         )
 
-target_include_directories(badge_apps INTERFACE ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/../hal/
-        ${CMAKE_CURRENT_LIST_DIR}/../core/)
+target_include_directories(badge_apps INTERFACE
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/../hal/
+        ${CMAKE_CURRENT_LIST_DIR}/../core/
+        )
 
 target_link_libraries(usermod INTERFACE badge_apps)
