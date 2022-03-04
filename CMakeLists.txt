@@ -1,13 +1,16 @@
 cmake_minimum_required(VERSION 3.12)
 
 # For simplicity of setup, just set defaults here. Can be overridden in IDE project settings or CLI
-set(PICO_SDK_FETCH_FROM_GIT ON CACHE BOOL "Download Pico SDK from Git. Default on.")
-set(TARGET "PICO" CACHE STRING "Target hardware. For now, only Pico, in the future, badge/simulator")
+set(TARGET "PICO" CACHE STRING "Target hardware. Change here or via CMake options to Simulator to build the sim.")
 
 if (${TARGET} STREQUAL "PICO")
-    # Pull in SDK (must be before project).
-    # Also does toolchain setup - configures us to use arm-none-eabi-gcc
-    include(pico_sdk_import.cmake)
+    set(PICO_SDK_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib/pico-sdk" CACHE PATH "Path to the Raspberry Pi Pico SDK" FORCE)
+    set(PICO_SDK_INIT_CMAKE_FILE ${PICO_SDK_PATH}/pico_sdk_init.cmake)
+    if (NOT EXISTS ${PICO_SDK_INIT_CMAKE_FILE})
+        message(FATAL_ERROR "Directory '${PICO_SDK_PATH}' does not appear to contain the Raspberry Pi Pico SDK")
+    endif ()
+
+    include(${PICO_SDK_INIT_CMAKE_FILE})
 endif()
 
 project(badge2022_c C CXX ASM)
