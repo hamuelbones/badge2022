@@ -23,6 +23,8 @@ if (MICROPY)
     if (${TARGET} STREQUAL "PICO")
         # Micropython build targets are not very fond of being added as a subdirectory. it *almost* works.
         # So instead we register it as an external command and run it.
+        # If debugging something _inside_ micropython, then opening the CMakeLists.txt in the ports/rp2
+        # folder is probably better to use.
         ExternalProject_Add(
                 micropython
                 SOURCE_DIR ${CMAKE_SOURCE_DIR}/lib/micropython/ports/rp2
