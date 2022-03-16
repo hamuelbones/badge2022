@@ -1,5 +1,4 @@
-# badge2022
-RVASec Badge 2022 Firmware
+# RVASec Badge 2022 Firmware
 
 # Initial Setup
 
@@ -58,11 +57,10 @@ You can use Ninja, if you like, as well. \(Specify `-G Ninja` instead of Makefil
 
 ## Building the Simulator
 
-The simulator is intended to run on a Posix-y (that is, Linux or Mac) environment. Windows can build and run it, but
-using Windows Subsystem for Linux if your Linux subsystem has a desktop environment set up.
+For more of a "step-by-step" intro to app development using the simulator, see the [simulator intro](SIMULATOR_INTRO.md)
 
-But to build the simulator, you will need a C compiler for your computer, in addition to GTK2. The best way to install
-GTK2 is probably through a package manager.
+The simulator is intended to run on a Posix-y (that is, Linux or Mac) environment. Windows can build and run it
+using Windows Subsystem for Linux if your Linux subsystem has a desktop environment set up.
 
 In a similar way to the hardware target, you can generate makefiles via CMake. Note that to make the simulator, there is
 an extra flag that gets passed in:
@@ -75,11 +73,6 @@ or, if that's too hard to type or remember:
 
 After which, you can `cd` into the `build_sim/` directory and run `make` to build the simulator target. The output
 program is called `build_sim/source/badge2022_c`, which you can run.
-
-## Adding Your Own Apps
-
-Apps are mostly contained within a single .c/.h file in the apps folder. Take a look at the comments inside the
-`badge-app-template` files for help getting started.
 
 # Current Status
 

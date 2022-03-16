@@ -3,9 +3,8 @@
 #include <stdlib.h>
 #include "colors.h"
 #include "menu.h"
-#include "button.h"
+#include "hal.h"
 #include "framebuffer.h"
-#include "rtc.h"
 
 #define INIT_APP_STATE 0
 #define RENDER_SCREEN 1
@@ -41,7 +40,7 @@ static void render_screen(void)
 	FbClear();
 	FbDrawObject(smiley, ARRAYSIZE(smiley), WHITE, smiley_x, smiley_y, 410);
 	/* Display the time stamp for no particular reason */
-	sprintf( buffer, %d, rtc_get_ms_since_boot());
+	sprintf( buffer, "%d", (int)rtc_get_ms_since_boot());
 	FbMove(10, 100);
 	FbWriteLine(buffer);
 	FbSwapBuffers();

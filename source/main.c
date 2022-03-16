@@ -12,12 +12,7 @@
 #include "cli_button.h"
 #include "cli_ir.h"
 
-#include "rtc.h"
-#include "button.h"
-#include "hal/usb.h"
-#include "flash_storage.h"
-#include "delay.h"
-#include "init.h"
+#include "hal.h"
 
 int exit_process(__attribute__((unused)) char *args) {
     return -1;
@@ -48,12 +43,13 @@ CLI_COMMAND help_command = {
 
 int badge_main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv) {
 
+    
     UserInit();
 
     if (button_poll(BADGE_BUTTON_LEFT)) {
 
         // Run debug CLI
-
+        
         // Need to ensure USB is connected before reading stdin, or else that will hang
         while (!usb_is_connected()) {
             sleep_ms(5);
@@ -75,6 +71,8 @@ int badge_main(__attribute__((unused)) int argc, __attribute__((unused)) char** 
 
     // run main app
     uint64_t frame_time = rtc_get_us_since_boot();
+    rtc_get_ms_since_boot();
+
     while (1) {
         uint64_t frame_period_us = ProcessIO();
         uint64_t current_time = rtc_get_us_since_boot();
