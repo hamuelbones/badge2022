@@ -8,6 +8,7 @@ target_sources(badge2022_c PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/game_of_life.c
         ${CMAKE_CURRENT_LIST_DIR}/ghost-detector.c
         ${CMAKE_CURRENT_LIST_DIR}/hacking_simulator.c
+        ${CMAKE_CURRENT_LIST_DIR}/hanabi.c
         ${CMAKE_CURRENT_LIST_DIR}/lunarlander.c
         ${CMAKE_CURRENT_LIST_DIR}/maze.c
         ${CMAKE_CURRENT_LIST_DIR}/qc.c
