@@ -27,7 +27,7 @@
 #define HANABI_MAX_DECK_SIZE (10*6)
 #define HANABI_NO_RAINBOW_DECK_SIZE (10*5)
 
-#define MAX_RULE_PAGES 10
+#define MAX_RULE_PAGES 11
 
 #define STARTING_BOMBS (3)
 #define STARTING_CLUES (8)
@@ -76,15 +76,6 @@ enum hanabi_message_type{
     msg_type_play,
 };
 
-struct dynmenu top_level_menu = {
-    .title = "Hanabi!",
-};
-struct dynmenu_item top_level_menu_items[4] = {
-        {.text = "Host New Game", .next_state = 0, .cookie = '>'},
-        {.text = "Join Game", .next_state = 0, .cookie = '>'},
-        {.text = "Learn the Rules", .next_state = 0, .cookie = '>'},
-        {.text = "Exit", .next_state = 0, .cookie = '>'},
-};
 
 void hanabi_change_players(struct menu_t *menu) {
     return; // TODO
@@ -101,44 +92,6 @@ void hanabi_start_hosting(struct menu_t *menu) {
 void hanabi_start_joining(struct menu_t *menu) {
 
 }
-
-const struct menu_t hanabi_new_game_menu[4] = {
-    {.name="Players: ", .type=FUNCTION, .attrib=VERT_ITEM, .data.func=hanabi_change_players},
-    {.name="Rainbow: ", .type=FUNCTION, .attrib=VERT_ITEM, .data.func=hanabi_change_rainbow},
-    {.name="Start Hosting", .type=FUNCTION, .attrib=VERT_ITEM, .data.func=hanabi_start_hosting},
-    {.name="Back", .type=BACK, .attrib=VERT_ITEM|LAST_ITEM, .data.func=NULL},
-};
-
-
-const char * const rules_overview =
-    "Hanabi is a cooper-\n"
-    "ative card game\n"
-    "where you and other\n"
-    "players put on a\n"
-    "fireworks show. You\n"
-    "know what cards the\n"
-    "other players have,\n"
-    "but not your own!\n\n"
-    "You win by playing\n"
-    "cards in all the\n"
-    "suits in ascending\n"
-    "order."
-;
-
-
-const char* rules_text[MAX_RULE_PAGES] = {
-    rules_overview,
-    rules_overview, //TODO
-    rules_overview, //TODO
-    rules_overview, //TODO
-    rules_overview, //TODO
-    rules_overview, //TODO
-    rules_overview, //TODO
-    rules_overview, //TODO
-    rules_overview, //TODO
-    rules_overview, //TODO
-};
-
 
 struct __attribute__((__packed__)) ir_new_game_message {
     uint32_t game_id;
@@ -218,6 +171,151 @@ void hanabi_enter_rules(struct menu_t *menu) {
     app.rulepage = menu->attrib & 0xF;
 }
 
+
+const char * const rules_overview =
+        "Hanabi is a cooper-\n"
+        "ative card game\n"
+        "for two to five\n"
+        "players. You know\n"
+        "what cards the\n"
+        "other players have,\n"
+        "but not your own!\n\n"
+        "You are trying to\n"
+        "coordinate to put\n"
+        "on a fireworks\n"
+        "show."
+;
+
+const char * const rules_goal =
+        "After cards are\n"
+        "dealt, you take\n"
+        "turns going clock-\n"
+        "wise.\n\n"
+        "You score points\n"
+        "by building stacks\n"
+        "of cards of each\n"
+        "color in ascending\n"
+        "order, 1-5.";
+
+
+const char * const rules_deck =
+        "The deck has five\n"
+        "colors: Red, Green,\n"
+        "Blue, White, and \n"
+        "Yellow. In each\n"
+        "color there are\n"
+        "three 1s, two 2s,\n"
+        "3s, and 4s, and\n"
+        "only one 5!\n"
+        "\n";
+
+const char * const rules_actions =
+        "On your turn, you\n"
+        "can take one and\n"
+        "only one of three\n"
+        "actions:\n"
+        "1) You can give a\n"
+        "   CLUE to a player\n"
+        "2) You can try to\n"
+        "   PLAY one card\n"
+        "3) You can DISCARD\n"
+        "   a card\n";
+
+const char * const rules_clue =
+        "You can give a CLUE\n"
+        "about a player's\n"
+        "hand, which all\n"
+        "players hear.\n"
+        "You can CLUE either\n"
+        "a COLOR or NUMBER.\n"
+        "The player gets told\n"
+        "ALL cards they have\n"
+        "that match.\n";
+
+const char * const rules_play =
+        "You can try to PLAY\n"
+        "a card. If the card\n"
+        "is the next number\n"
+        "in any color stack,\n"
+        "it goes on top! \n"
+        "If not, the team\n"
+        "loses a FUSE and the\n"
+        "card is DISCARDed.\n"
+        "Draw after any PLAY\n"
+        "attempt.\n"
+        "The game ends with\n"
+        "no points if you\n"
+        "lose 3 FUSEs.";
+
+const char * const rules_discard =
+        "You can DISCARD a\n"
+        "card to draw a new\n"
+        "one.\n\n"
+        "Discarded cards are\n"
+        "out of the game!\n";
+
+const char* const rules_information =
+        "The game starts\n"
+        "with eight INFO.\n"
+        "Cluing consumes one\n"
+        "INFO. Discarding or\n"
+        "successfully playing\n"
+        "a five gains one. If\n"
+        "you have no INFO,\n "
+        "you can't give a \n"
+        "CLUE!\n";
+
+const char * const rules_rainbow =
+        "You can play with\n"
+        "an optional suit.\n"
+        "RAINBOW cards are\n"
+        "ALL colors! (You\n"
+        "cannot use RAINBOW\n"
+        "in a clue.\n";
+
+
+const char * const rules_end =
+        "After the last\n"
+        "card is drawn, ev-\n"
+        "eryone gets ONE\n"
+        "more turn. Your\n"
+        "score is the \n"
+        "number of cards in\n"
+        "stacks.\n\n"
+        "Try for the elusive\n"
+        "max score! :)\n"
+        "\n";
+
+const char * const rules_strategy =
+        "Building convent-\n"
+        "ions with your team\n"
+        "is essential. Some\n"
+        "handy guidelines:\n"
+        "Getting a CLUE\n"
+        "often means you\n"
+        "should PLAY.\n"
+        "When in doubt, PLAY\n"
+        "newer cards first,\n"
+        "DISCARD older ones\n"
+        "first.\n"
+        "This is just the\n"
+        "start!\n";
+
+const char* rules_text[MAX_RULE_PAGES] = {
+        rules_overview,
+        rules_goal,
+        rules_deck,
+        rules_actions,
+        rules_clue,
+        rules_play,
+        rules_discard,
+        rules_information,
+        rules_rainbow,
+        rules_end,
+        rules_strategy,
+};
+
+
 void hanabi_draw_rules(void) {
     FbClear();
     FbBackgroundColor(BLUE);
@@ -231,17 +329,23 @@ void hanabi_draw_rules(void) {
 
 }
 
+
+const struct menu_t hanabi_new_game_menu[4] = {
+        {.name="Players: ", .type=FUNCTION, .attrib=VERT_ITEM, .data.func=hanabi_change_players},
+        {.name="Rainbow: ", .type=FUNCTION, .attrib=VERT_ITEM, .data.func=hanabi_change_rainbow},
+        {.name="Start Hosting", .type=FUNCTION, .attrib=VERT_ITEM, .data.func=hanabi_start_hosting},
+        {.name="Back", .type=BACK, .attrib=VERT_ITEM|LAST_ITEM, .data.func=NULL},
+};
+
+
 const struct menu_t hanabi_rules[MAX_RULE_PAGES+1] = {
         {.name="Overview", .type=FUNCTION, .attrib=VERT_ITEM | 0, .data.func=hanabi_enter_rules},
-        {.name="Goal", .type=FUNCTION, .attrib=VERT_ITEM | 1, .data.func=hanabi_enter_rules},
-        {.name="Actions", .type=FUNCTION, .attrib=VERT_ITEM | 2, .data.func=hanabi_enter_rules},
-        {.name="Clue", .type=FUNCTION, .attrib=VERT_ITEM | 3, .data.func=hanabi_enter_rules},
-        {.name="Discard", .type=FUNCTION, .attrib=VERT_ITEM | 4, .data.func=hanabi_enter_rules},
-        {.name="Play", .type=FUNCTION, .attrib=VERT_ITEM | 5, .data.func=hanabi_enter_rules},
-        {.name="Deck", .type=FUNCTION, .attrib=VERT_ITEM | 6, .data.func=hanabi_enter_rules},
-        {.name="Rainbow", .type=FUNCTION, .attrib=VERT_ITEM| 7, .data.func=hanabi_enter_rules},
-        {.name="End of Game", .type=FUNCTION, .attrib=VERT_ITEM | 8, .data.func=hanabi_enter_rules},
-        {.name="Strategy", .type=FUNCTION, .attrib=VERT_ITEM | 9, .data.func=hanabi_enter_rules},
+        {.name="Deck", .type=FUNCTION, .attrib=VERT_ITEM | 2, .data.func=hanabi_enter_rules},
+        {.name="Actions", .type=FUNCTION, .attrib=VERT_ITEM | 3, .data.func=hanabi_enter_rules},
+        {.name="Information", .type=FUNCTION, .attrib=VERT_ITEM | 7, .data.func=hanabi_enter_rules},
+        {.name="Rainbow", .type=FUNCTION, .attrib=VERT_ITEM| 8, .data.func=hanabi_enter_rules},
+        {.name="End of Game", .type=FUNCTION, .attrib=VERT_ITEM | 9, .data.func=hanabi_enter_rules},
+        {.name="Strategy", .type=FUNCTION, .attrib=VERT_ITEM | 10, .data.func=hanabi_enter_rules},
         {.name="Back", .type=BACK, .attrib=VERT_ITEM|LAST_ITEM},
 };
 
