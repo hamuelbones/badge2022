@@ -4,15 +4,17 @@
 
 #include "hanabi.h"
 #include "colors.h"
-#include "menu.h"
+#include "dynmenu.h"
 #include "button.h"
 #include "framebuffer.h"
 #include "random.h"
 #include "ir.h"
+#include "menu.h"
 
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
+#include <printf.h>
 
 #define HANABI_SUIT_MASK 0x38
 #define HANABI_SUIT_SHIFT 3
@@ -25,11 +27,27 @@
 #define HANABI_MAX_DECK_SIZE (10*6)
 #define HANABI_NO_RAINBOW_DECK_SIZE (10*5)
 
+#define MAX_RULE_PAGES 10
+
 #define STARTING_BOMBS (3)
 #define STARTING_CLUES (8)
 
 #define MAX_PLAYERS (5)
 #define MAX_CARDS_IN_HAND (5)
+
+
+/* Program states.  Initial state is MYPROGRAM_INIT */
+enum hanabi_state_t {
+    HANABI_INIT,
+    HANABI_MENU,
+    HANABI_RULES,
+    HANABI_GAME,
+    HANABI_LOSE,
+    HANABI_WIN,
+    HANABI_EXIT
+};
+
+static enum hanabi_state_t hanabi_app_state = HANABI_INIT;
 
 enum hanabi_suit{
     SUIT_BLUE = 0,
@@ -58,6 +76,68 @@ enum hanabi_message_type{
     msg_type_play,
 };
 
+struct dynmenu top_level_menu = {
+    .title = "Hanabi!",
+};
+struct dynmenu_item top_level_menu_items[4] = {
+        {.text = "Host New Game", .next_state = 0, .cookie = '>'},
+        {.text = "Join Game", .next_state = 0, .cookie = '>'},
+        {.text = "Learn the Rules", .next_state = 0, .cookie = '>'},
+        {.text = "Exit", .next_state = 0, .cookie = '>'},
+};
+
+void hanabi_change_players(struct menu_t *menu) {
+    return; // TODO
+}
+
+void hanabi_change_rainbow(struct menu_t *menu) {
+    return; // TODO
+}
+
+void hanabi_start_hosting(struct menu_t *menu) {
+    return; // TODO
+}
+
+void hanabi_start_joining(struct menu_t *menu) {
+
+}
+
+const struct menu_t hanabi_new_game_menu[4] = {
+    {.name="Players: ", .type=FUNCTION, .attrib=VERT_ITEM, .data.func=hanabi_change_players},
+    {.name="Rainbow: ", .type=FUNCTION, .attrib=VERT_ITEM, .data.func=hanabi_change_rainbow},
+    {.name="Start Hosting", .type=FUNCTION, .attrib=VERT_ITEM, .data.func=hanabi_start_hosting},
+    {.name="Back", .type=BACK, .attrib=VERT_ITEM|LAST_ITEM, .data.func=NULL},
+};
+
+
+const char * const rules_overview =
+    "Hanabi is a cooper-\n"
+    "ative card game\n"
+    "where you and other\n"
+    "players put on a\n"
+    "fireworks show. You\n"
+    "know what cards the\n"
+    "other players have,\n"
+    "but not your own!\n\n"
+    "You win by playing\n"
+    "cards in all the\n"
+    "suits in ascending\n"
+    "order."
+;
+
+
+const char* rules_text[MAX_RULE_PAGES] = {
+    rules_overview,
+    rules_overview, //TODO
+    rules_overview, //TODO
+    rules_overview, //TODO
+    rules_overview, //TODO
+    rules_overview, //TODO
+    rules_overview, //TODO
+    rules_overview, //TODO
+    rules_overview, //TODO
+    rules_overview, //TODO
+};
 
 
 struct __attribute__((__packed__)) ir_new_game_message {
@@ -87,6 +167,10 @@ struct __attribute((__packed__)) ir_play_message {
 
 struct hanabi_game {
 
+
+    // Game communication information
+
+    uint32_t id; // randomly generate this so we don't get mixed up with other games
     union {
         struct ir_play_message play;
         struct ir_new_player_response response;
@@ -94,29 +178,79 @@ struct hanabi_game {
     } ir_data;
     bool has_ir_data;
 
-    uint8_t deck[HANABI_MAX_DECK_SIZE];
-    struct hanabi_action play_history[HANABI_MAX_DECK_SIZE];
-    uint8_t my_last_play_index;
-    uint32_t id; // randomly generate this so we don't get mixed up with other games
-
-    uint8_t discard_pile[HANABI_MAX_DECK_SIZE];
-    uint8_t board_state[SUIT_MAX];
-    uint8_t hand[MAX_PLAYERS][MAX_CARDS_IN_HAND];
-    uint8_t cards_per_hand;
-    uint8_t plays;
-
-    uint8_t deck_index;
-    uint8_t clues;
-    uint8_t bombs;
-
+    // Game configuration information
     bool rainbow_included;
     bool rainbow_normal_color;
     uint8_t player_number;
     uint8_t player_count;
+
+    // Deck and play information
+    uint8_t deck[HANABI_MAX_DECK_SIZE];
+    uint8_t deck_index; // Where are we drawing from?
+    struct hanabi_action play_history[HANABI_MAX_DECK_SIZE]; // List of past plays
+    uint8_t play_index;
+    uint8_t my_last_play_index; // Where was my last play? (for sending over IR)
+    uint8_t discard_pile[HANABI_MAX_DECK_SIZE]; // What's the discard pile?
+    uint8_t board_state[SUIT_MAX];
+
+
+    uint8_t hand[MAX_PLAYERS][MAX_CARDS_IN_HAND];
+    uint8_t cards_per_hand;
+
+    uint8_t clues;
+    uint8_t bombs;
+
     uint8_t current_players_registered; // host only
 };
 
+struct hanabi_app {
+    uint8_t rulepage;
+};
+
 static struct hanabi_game hanabi;
+static struct hanabi_app app;
+
+
+void hanabi_enter_rules(struct menu_t *menu) {
+
+    hanabi_app_state = HANABI_RULES;
+
+    app.rulepage = menu->attrib & 0xF;
+}
+
+void hanabi_draw_rules(void) {
+    FbClear();
+    FbBackgroundColor(BLUE);
+    FbColor(WHITE);
+    FbMove(6, 8);
+    char title[20];
+    snprintf(title, 20, "Page %u/%u", app.rulepage+1, MAX_RULE_PAGES);
+    FbWriteDenseString(title);
+    FbMove(6, 16);
+    FbWriteDenseString(rules_text[app.rulepage]);
+
+}
+
+const struct menu_t hanabi_rules[MAX_RULE_PAGES+1] = {
+        {.name="Overview", .type=FUNCTION, .attrib=VERT_ITEM | 0, .data.func=hanabi_enter_rules},
+        {.name="Goal", .type=FUNCTION, .attrib=VERT_ITEM | 1, .data.func=hanabi_enter_rules},
+        {.name="Actions", .type=FUNCTION, .attrib=VERT_ITEM | 2, .data.func=hanabi_enter_rules},
+        {.name="Clue", .type=FUNCTION, .attrib=VERT_ITEM | 3, .data.func=hanabi_enter_rules},
+        {.name="Discard", .type=FUNCTION, .attrib=VERT_ITEM | 4, .data.func=hanabi_enter_rules},
+        {.name="Play", .type=FUNCTION, .attrib=VERT_ITEM | 5, .data.func=hanabi_enter_rules},
+        {.name="Deck", .type=FUNCTION, .attrib=VERT_ITEM | 6, .data.func=hanabi_enter_rules},
+        {.name="Rainbow", .type=FUNCTION, .attrib=VERT_ITEM| 7, .data.func=hanabi_enter_rules},
+        {.name="End of Game", .type=FUNCTION, .attrib=VERT_ITEM | 8, .data.func=hanabi_enter_rules},
+        {.name="Strategy", .type=FUNCTION, .attrib=VERT_ITEM | 9, .data.func=hanabi_enter_rules},
+        {.name="Back", .type=BACK, .attrib=VERT_ITEM|LAST_ITEM},
+};
+
+const struct menu_t hanabi_menu[4] = {
+        {.name="Host New Game", .type=MENU, .attrib=VERT_ITEM, .data.menu=hanabi_new_game_menu},
+        {.name="Join Game", .type=FUNCTION, .attrib=VERT_ITEM, .data.func=hanabi_start_joining},
+        {.name="Learn the Rules", .type=MENU, .attrib=VERT_ITEM, .data.menu=hanabi_rules},
+        {.name="Exit", .type=FUNCTION, .attrib=VERT_ITEM|LAST_ITEM, .data.func=NULL}
+};
 
 
 static void ir_packet_callback(const IR_DATA *data) {
@@ -203,11 +337,11 @@ static bool game_loses(struct hanabi_game* game) {
 
 
 static bool is_player_turn(struct hanabi_game* game) {
-    if (game->plays == 0) {
+    if (game->play_index == 0) {
         return game->player_number == 0;
     }
 
-    return (game->play_history[game->plays-1].acting_player + 1) % game->player_count == game->player_number;
+    return (game->play_history[game->play_index-1].acting_player + 1) % game->player_count == game->player_number;
 }
 
 static const uint8_t unshuffled_deck[HANABI_MAX_DECK_SIZE] = {
@@ -267,7 +401,7 @@ static void generate_board(struct hanabi_game* game,
     game->rainbow_normal_color = rainbow_normal;
     game->player_count = players;
     game->player_number = player_num;
-    game->plays = 0;
+    game->play_index = 0;
     game->current_players_registered = 1;
 
     size_t deck_size = game->rainbow_included ? HANABI_MAX_DECK_SIZE : HANABI_NO_RAINBOW_DECK_SIZE;
@@ -304,17 +438,6 @@ static void generate_board(struct hanabi_game* game,
 }
 
 
-/* Program states.  Initial state is MYPROGRAM_INIT */
-enum hanabi_state_t {
-    HANABI_INIT,
-    HANABI_MENU,
-    HANABI_GAME,
-    HANABI_LOSE,
-    HANABI_WIN,
-    HANABI_EXIT
-};
-
-static enum hanabi_state_t hanabi_app_state = HANABI_INIT;
 
 static void myprogram_init(void)
 {
@@ -323,31 +446,14 @@ static void myprogram_init(void)
     hanabi_app_state = HANABI_MENU;
 }
 
-static void check_buttons()
-{
-    int down_latches = button_down_latches();
-    if (BUTTON_PRESSED(BADGE_BUTTON_SW, down_latches)) {
-        /* Pressing the button exits the program. You probably want to change this. */
-        hanabi_app_state = HANABI_EXIT;
-    } else if (BUTTON_PRESSED(BADGE_BUTTON_LEFT, down_latches)) {
-    } else if (BUTTON_PRESSED(BADGE_BUTTON_RIGHT, down_latches)) {
-    } else if (BUTTON_PRESSED(BADGE_BUTTON_UP, down_latches)) {
-    } else if (BUTTON_PRESSED(BADGE_BUTTON_DOWN, down_latches)) {
-    }
-}
 
 static void draw_screen()
-{
-    FbColor(WHITE);
-    FbMove(10, LCD_YSIZE / 2);
-    FbWriteLine("HOWDY!");
+{;
     FbSwapBuffers();
 }
 
 static void myprogram_run()
 {
-    check_buttons();
-    draw_screen();
 }
 
 static void myprogram_exit()
@@ -357,16 +463,45 @@ static void myprogram_exit()
 }
 
 /* You will need to rename myprogram_cb() something else. */
-void myprogram_cb(void)
+void hanabi_cb(void)
 {
+
+    int button_latches = button_down_latches();
+    int encoder = button_get_rotation();
+
     switch (hanabi_app_state) {
         case HANABI_INIT:
             ir_add_callback(ir_packet_callback, IR_APP7);
             myprogram_init();
             break;
-        case HANABI_MENU:
-            myprogram_run();
+        case HANABI_MENU: {
+            genericMenu(hanabi_menu, MAIN_MENU_STYLE, button_latches);
+        }
             break;
+        case HANABI_RULES: {
+
+            if (encoder < 0 || BUTTON_PRESSED(BADGE_BUTTON_LEFT, button_latches)) {
+                if (app.rulepage == 0) {
+                    app.rulepage = MAX_RULE_PAGES-1;
+                } else {
+                    app.rulepage--;
+                }
+            }
+            if (encoder > 0 || BUTTON_PRESSED(BADGE_BUTTON_RIGHT, button_latches)) {
+                if (app.rulepage == MAX_RULE_PAGES-1) {
+                    app.rulepage = 0;
+                } else {
+                    app.rulepage++;
+                }
+            }
+
+            if (BUTTON_PRESSED(BADGE_BUTTON_SW, button_latches)) {
+                hanabi_app_state = HANABI_MENU;
+            }
+
+            hanabi_draw_rules();
+        }
+        break;
         case HANABI_EXIT:
             ir_remove_callback(ir_packet_callback, IR_APP7);
             myprogram_exit();
@@ -374,5 +509,7 @@ void myprogram_cb(void)
         default:
             break;
     }
+
+    draw_screen();
 }
 
