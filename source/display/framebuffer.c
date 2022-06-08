@@ -472,12 +472,28 @@ void FbTransparentIndex(unsigned short color)
 }
 
 #include <stdio.h>
-void FbCharacter(unsigned char charin)
+void FbCharacter(unsigned char charin, bool dense)
 {
     if ((charin < 32) | (charin > 126)) charin = 32;
 
     charin -= 32;
-    FbImage1bit(&assetList[G_Fb.font], charin);
+    if (!dense) {
+        FbImage1bit(&assetList[G_Fb.font], charin);
+    } else {
+        // char data is actually 5x7 (6x8 with bounding). Most characters have less.
+        char dense_char[8];
+        for (int i=0; i<8; i++) {
+            dense_char[i] = (char)((assetList[G_Fb.font].pixdata[charin*8+i])>>1);
+        }
+        struct asset character = {
+            .x = 6,
+            .y = 8,
+            .pixdata = dense_char,
+            .seqNum = 1,
+            .type = PICTURE1BIT
+        };
+        FbImage1bit(&character, 0);
+    }
 
     /* advance x pos, but not y */
     // FbMove(G_Fb.pos.x + assetList[G_Fb.font].x, G_Fb.pos.y);
@@ -568,7 +584,7 @@ void FbWriteLine(const char *string)
 
     for(j=0; string[j] != 0; j++) {
         FbMove(x + j * assetList[G_Fb.font].x, y);
-        FbCharacter(string[j]);
+        FbCharacter(string[j], false);
         FbMove(x + (j+1) * assetList[G_Fb.font].x, y);
     }
     G_Fb.changed = 1;
@@ -585,8 +601,26 @@ void FbWriteString(const char *string)
             FbMoveRelative(0, 8);
             FbMoveX(x);
         } else {
-            FbCharacter(string[j]);
+            FbCharacter(string[j], false);
             FbMoveRelative(8, 0);
+        }
+    }
+    G_Fb.changed = 1;
+}
+
+void FbWriteDenseString(const char* string)
+{
+    unsigned char j, x;
+
+    x = G_Fb.pos.x;
+
+    for(j=0; string[j] != 0; j++) {
+        if (string[j] == '\n') {
+            FbMoveRelative(0, 8);
+            FbMoveX(x);
+        } else {
+            FbCharacter(string[j], true);
+            FbMoveRelative(6, 0);
         }
     }
     G_Fb.changed = 1;

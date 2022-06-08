@@ -2,6 +2,7 @@
 #define fb_h
 
 #include "assetList.h"
+#include <stdbool.h>
 
 /*
    Frame buffer
@@ -58,7 +59,7 @@ void FbBackgroundColor(unsigned short color);
 void FbTransparency(unsigned short transparencyMask);
 void FbTransparentIndex(unsigned short color);
 void FbSprite(unsigned char picId, unsigned char imageNo);
-void FbCharacter(unsigned char charin);
+void FbCharacter(unsigned char charin, bool dense);
 void FbFilledRectangle(unsigned char width, unsigned char height);
 void FbPoint(unsigned char x, unsigned char y);
 void FbPrintChar(unsigned char charin, unsigned char x, unsigned char y);
@@ -67,6 +68,7 @@ void FbVerticalLine(unsigned char x1, unsigned char y1, unsigned char x2, unsign
 void FbLine(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1);
 void FbWriteLine(const char *string);
 void FbWriteString(const char *string);
+void FbWriteDenseString(const char* string);
 void FbRectangle(unsigned char width, unsigned char height);
 
 /** @brief Render the asset with its upper left corner at the current frame buffer location.
